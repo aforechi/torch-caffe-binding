@@ -1,0 +1,1 @@
+/home/hxw/visual_concepts_image_caption/models/vgg/torch-caffe-binding/CMakeFiles/tcaffe.dir
