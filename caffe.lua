@@ -2,14 +2,27 @@ local Net, parent = torch.class('caffe.Net', 'nn.Module')
 local ffi = require 'ffi'
 local C = caffe.C
 
-function Net:__init(prototxt_name, binary_name, phase_name)
-  assert(type(prototxt_name) == 'string')
+-- support loading caffe model only with prototxt file without binary file 
+-- by default parameters: prototxt_name, binary_name, phase_name 
+function Net:__init(...)
+  local arg = {...}
+  local n = #arg 
+  if n == 3 then -- the order: txt file, binary file, phase name 
+    self.prototxt_name = arg[1]
+    self.binary_name = arg[2]
+    self.phase_name = arg[3]
+  else -- by default: txt file, phase name , 
+    self.prototxt_name = arg[1]
+    self.binary_name = nil
+    self.phase_name = arg[2]    
+  end 
+  assert(type(self.prototxt_name) == 'string')
   --assert(type(binary_name) == 'string')
-  assert(type(phase_name) == 'string')
+  assert(type(self.phase_name) == 'string')
   parent.__init(self)
   self.handle = ffi.new'void*[1]'
   local old_handle = self.handle[1]
-  C.init(self.handle, prototxt_name, binary_name, phase_name)
+  C.init(self.handle, self.prototxt_name, self.binary_name, self.phase_name)
   if(self.handle[1] == old_handle) then
     print 'Unsuccessful init'
   end
