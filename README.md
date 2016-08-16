@@ -3,7 +3,7 @@ torch-caffe-binding
 
 A short binding to use Caffe as a module in Torch7. Has the same functionality as MATLAB bindings.
 
-(Mathod 1) You have to have installed and built Caffe, then do this:
+*(Mathod 1)* You have to have installed and built Caffe, then do this:
 
 ```bash
 CAFFE_DIR=/*path-to-caffe-root*/ luarocks install caffe
@@ -13,7 +13,7 @@ thus you can directly load this package using command below:
 require 'caffe'
 ```
 
-(Method 2) This is my way of installing torch-caffe-binding.
+*(Method 2)* This is my way of installing torch-caffe-binding.
 Fist I modify CMakeList.txt file [here](https://github.com/eriche2016/torch-caffe-binding/blob/master/CMakeLists.txt#L44-L50)
 ```bash
 CAFFE_DIR=/home/hxw/visual_concepts_image_caption/caffe cmake .
