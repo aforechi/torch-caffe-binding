@@ -1,5 +1,0 @@
-/home/hxw/visual_concepts_image_caption/models/vgg/torch-caffe-binding/dir/libtcaffe.so
-/home/hxw/visual_concepts_image_caption/models/vgg/torch-caffe-binding/caffe/test.lua
-/home/hxw/visual_concepts_image_caption/models/vgg/torch-caffe-binding/caffe/init.lua
-/home/hxw/visual_concepts_image_caption/models/vgg/torch-caffe-binding/caffe/ffi.lua
-/home/hxw/visual_concepts_image_caption/models/vgg/torch-caffe-binding/caffe/caffe.lua
