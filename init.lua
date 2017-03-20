@@ -1,4 +1,4 @@
 require 'nn'
-caffe = {}
-include 'ffi.lua'
-include 'caffe.lua'
+tcaffe = {}
+torch.include('tcaffe', 'ffi.lua')
+torch.include('tcaffe', 'caffe.lua')
