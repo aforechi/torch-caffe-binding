@@ -31,6 +31,13 @@ function Net:__init(...)
   self:float()
 end
 
+function Net:blobs(name)
+  assert(type(name) == 'string')
+  local blob_tensor = torch.Tensor()
+  C.get_blob_by_name(self.handle, name, blob_tensor:cdata())
+  return blob_tensor
+end
+
 function Net:forward(input)
   assert(input:type() == 'torch.FloatTensor')
   C.do_forward(self.handle, input:cdata(), self.output:cdata())
@@ -44,19 +51,24 @@ function Net:updateGradInput(input, gradOutput)
   return self.gradInput
 end
 
+function Net:forwardPrefilled()
+  C.do_forward_prefilled(self.handle, self.output:cdata())
+  return self.output
+end
+
 function Net:reset()
   C.reset(self.handle)
 end
 
-function Net:setModeCPU()
+function Net.setModeCPU()
   C.set_mode_cpu()
 end
 
-function Net:setModeGPU()
+function Net.setModeGPU()
   C.set_mode_gpu()
 end
 
-function Net:setDevice(device_id)
+function Net.setDevice(device_id)
   C.set_device(device_id)
 end
 
