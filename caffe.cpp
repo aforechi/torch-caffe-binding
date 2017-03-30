@@ -8,10 +8,12 @@ extern "C"
 {
 void init(void* handle[1], const char* param_file, const char* model_file, const char* phase);
 void get_blob_by_name(void* handle[1], const char* name, THFloatTensor* output);
+void get_layer_by_name(void* handle[1], const char* name, THFloatTensor* output, int index);
 void do_forward(void* handle[1], THFloatTensor* bottom, THFloatTensor* output);
 void do_backward(void* handle[1], THFloatTensor* gradOutput, THFloatTensor* gradInput);
 void do_forward_prefilled(void* handle[1], THFloatTensor* output);
 void reset(void* handle[1]);
+void debug(void* handle[1]);
 void set_mode_cpu();
 void set_mode_gpu();
 void set_phase_train();
@@ -20,6 +22,16 @@ void set_device(int device_id);
 }
 
 using namespace caffe;  // NOLINT(build/namespaces)
+
+void debug(void* handle[1]) {
+  Net<float>* net_ = (Net<float>*)handle[1];
+  const vector<Blob<float>*>& result = net_->output_blobs();
+  for (int j = 0; j < result.size(); ++j) {
+    const string& output_name = net_->blob_names()[net_->output_blob_indices()[j]];
+    std::cout << j << output_name << std::endl;
+  }
+}
+
 
 void init(void* handle[1], const char* param_file, const char* model_file, const char* phase_name)
 {
@@ -41,6 +53,28 @@ void init(void* handle[1], const char* param_file, const char* model_file, const
 void get_blob_by_name(void* handle[1], const char* name, THFloatTensor* output) {
   Net<float>* net_ = (Net<float>*)handle[1];
   const boost::shared_ptr<Blob<float> > output_blobs = net_->blob_by_name(string(name));
+  // internally data is stored as (width, height, channels, num)
+    // where width is the fastest dimension
+    THFloatTensor_resize4d(output, output_blobs->num(), output_blobs->channels(), output_blobs->height(), output_blobs->width());
+    float* data_ptr = THFloatTensor_data(output);
+    switch (Caffe::mode()) {
+    case Caffe::CPU:
+      caffe_copy(output_blobs->count(), output_blobs->cpu_data(),
+          data_ptr);
+      break;
+    case Caffe::GPU:
+      caffe_copy(output_blobs->count(), output_blobs->gpu_data(),
+          data_ptr);
+      break;
+    default:
+      LOG(FATAL) << "Unknown Caffe mode.";
+    }  // switch (Caffe::mode())
+}
+
+void get_layer_by_name(void* handle[1], const char* name, THFloatTensor* output, int index) {
+  Net<float>* net_ = (Net<float>*)handle[1];
+  const boost::shared_ptr<Layer<float> > output_layer = net_->layer_by_name(string(name));
+  const boost::shared_ptr<Blob<float> > output_blobs = output_layer->blobs()[index];
   // internally data is stored as (width, height, channels, num)
     // where width is the fastest dimension
     THFloatTensor_resize4d(output, output_blobs->num(), output_blobs->channels(), output_blobs->height(), output_blobs->width());

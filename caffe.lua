@@ -38,6 +38,13 @@ function Net:blobs(name)
   return blob_tensor
 end
 
+function Net:layers(name, index)
+  assert(type(name) == 'string')
+  local layer_tensor = torch.Tensor()
+  C.get_layer_by_name(self.handle, name, layer_tensor:cdata(), index)
+  return layer_tensor
+end
+
 function Net:forward(input)
   assert(input:type() == 'torch.FloatTensor')
   C.do_forward(self.handle, input:cdata(), self.output:cdata())
@@ -58,6 +65,10 @@ end
 
 function Net:reset()
   C.reset(self.handle)
+end
+
+function Net:debug()
+  C.debug(self.handle)
 end
 
 function Net.setModeCPU()
